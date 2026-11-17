@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Body Schema Policy (BSP), a diffusion policy that organizes vision and action around the robot's body.">
+  <meta name="theme-color" content="#e2edf9">
+  <meta name="referrer" content="no-referrer">
+  <title>Body Schema Policy</title>
+  <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/site.css">
+  <link rel="preload" href="static/fonts/roboto-slab-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="static/js/page.js" defer></script>
+  <script src="static/videos/sim/rollouts.js" defer></script>
+  <script src="static/js/rollouts.js" defer></script>
+  <script src="static/denoising/index.js" defer></script>
+  <script src="static/js/denoising.js" defer></script>
+  <script src="static/sensitivity/index.js" defer></script>
+  <script src="static/js/sensitivity.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="Main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item brand" href="#intro" aria-label="Body Schema Policy, back to top">
+          <svg viewBox="0 0 32 32" width="29" height="29" aria-hidden="true"><path d="M16 5v10m0 0L6 25m10-10 10 10M6 25V15m20 10V15"/><circle cx="16" cy="5" r="3"/><circle cx="16" cy="15" r="3"/><circle cx="6" cy="25" r="3"/><circle cx="26" cy="25" r="3"/></svg>
+          <span>Body Schema Policy</span>
+        </a>
+        <button class="navbar-burger" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-menu"><span></span><span></span><span></span></button>
+      </div>
+      <div class="navbar-menu" id="nav-menu">
+        <div class="navbar-end">
+          <a class="navbar-item" href="#abstract">Abstract</a>
+          <a class="navbar-item" href="#method">Method</a>
+          <a class="navbar-item" href="#mechanism">Mechanism</a>
+          <a class="navbar-item" href="#results">Results</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="intro" aria-labelledby="project-title">
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          <h1 id="project-title">Body Schema Policy</h1>
+          <p class="hero-subtitle">Body as the Vision–Action Interface for Efficient Robot Loco-Manipulation</p>
+          <p class="authors">Lechen Zhang, Chenyuan Chen, Muxin Zhou, Zewen He, Yoshihiko Nakamura</p>
+          <p class="affiliations">Mohamed bin Zayed University of Artificial Intelligence</p>
+          <div class="publication-links" aria-label="Publication resources pending">
+            <button class="button resource-button" type="button" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2h7l4 4v12H5zM12 2v5h4M8 10h5m-5 3h5"/></svg> Paper <span>coming soon</span></button>
+            <button class="button resource-button" type="button" disabled><span class="code-icon" aria-hidden="true">&lt;/&gt;</span> Code <span>coming soon</span></button>
+            <a class="button explore-button" href="#results">Watch rollouts <span aria-hidden="true">↓</span></a>
+          </div>
+
+          <figure class="teaser figure-card">
+            <img src="static/images/teaser.webp" srcset="static/images/teaser-1200.webp 1200w, static/images/teaser.webp 2400w" sizes="(max-width: 1318px) calc(100vw - 118px), 1200px" decoding="async" fetchpriority="high" width="2400" height="743" alt="Three panels. Left, human motor control: a person reaching for a box, annotated with body schema, body-centered vision and internal model. Middle, Body Schema Policy: a Unitree G1 humanoid making the same reach, annotated with latent body schema, body-queried vision and action denoising. Right: success rate against action chunking latency for eight policies, marker size showing parameter count; Ours sits at the top right.">
+            <figcaption><strong>From the human body schema to a robot's latent body schema.</strong> Left: the human body schema links perception with the body and its movement. Middle: Body Schema Policy (BSP) organizes visual queries and action generation around features on the robot's latent body schema. Right: success rate versus action chunking latency on simulated G1 whole-body tasks.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section abstract-section" id="abstract" aria-labelledby="abstract-title">
+      <div class="container reading-width">
+        <div class="section-heading"><h2 id="abstract-title">Abstract</h2></div>
+        <div class="abstract-copy">
+          <p>Currently, robots can learn whole-body loco-manipulation through scale: the strongest policies have billions of parameters and still need task-specific fine-tuning. Humans have limited processing capacity, yet learn and act efficiently through a body schema that organizes what they see and how they move. We introduce Body Schema Policy (BSP), an imitation learning policy that builds such a schema into the vision–action interface. Its latent body schema places joint and link tokens on the robot's kinematic tree, where learned screw motions carry features between links. Through body-queried vision, each body part retrieves its own visual evidence, which conditions the denoising of its actions. With this inductive bias, BSP returns an action chunk faster than any policy we compare. Compact, body-specific visual readouts also emerge without spatial supervision: manipulation commands depend strongly on task objects, while locomotion commands respond more broadly to the scene. On nine simulated Unitree G1 whole-body tasks, BSP matches the Ψ<sub>0</sub> humanoid foundation model with 75× fewer parameters and nearly doubles Diffusion Policy's success. The same holds on a real G1 and a Fetch mobile manipulator.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section method-section" id="method" aria-labelledby="method-title">
+      <div class="container">
+        <div class="section-heading has-text-centered"><h2 id="method-title">Method</h2></div>
+        <figure class="figure-card">
+          <img src="static/images/method-overview.webp" srcset="static/images/method-overview-1200.webp 1200w, static/images/method-overview.webp 2400w" sizes="(max-width: 1318px) calc(100vw - 118px), 1200px" decoding="async" width="2400" height="847" loading="lazy" alt="Architecture diagram. An egocentric image passes through a visual encoder into visual tokens. Robot state, the denoising step and the noisy action chunk initialize the latent body schema: joint, link and global tokens on the robot's kinematic tree. Neural screw blocks move parent-link features to the child link and update the joint; periodic blocks add body self-attention and body-queried cross-attention into the visual tokens. The final schema gives one condition per action coordinate to a shared temporal decoder, which predicts the action noise.">
+          <figcaption><strong>Body Schema Policy architecture.</strong> The state, the denoising step and the current action hypothesis initialize joint, link and global tokens. Each neural screw block transports parent-link features to child links, then updates the corresponding joint tokens. Periodic blocks add body self-attention over links and the global token, and body-queried cross-attention, which retrieves image features with body tokens as queries and visual tokens as keys and values. The final schema supplies one condition per action coordinate to a shared temporal decoder, which predicts action noise.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section mechanism-section" id="mechanism" aria-labelledby="mechanism-title">
+      <div class="container">
+        <div class="section-heading has-text-centered"><h2 id="mechanism-title">Mechanism analysis</h2></div>
+        <div class="figure-set">
+          <div class="subsection-bar">
+            <h3 class="subsection-title">Expressivity</h3>
+            <div class="figure-switch" role="radiogroup" aria-label="Robot">
+              <label><input class="sr-only" type="radio" name="fk-robot" value="g1" checked><span>Unitree G1</span></label>
+              <label><input class="sr-only" type="radio" name="fk-robot" value="fetch"><span>Fetch</span></label>
+              <label><input class="sr-only" type="radio" name="fk-robot" value="franka"><span>Franka</span></label>
+              <label><input class="sr-only" type="radio" name="fk-robot" value="stretch"><span>Stretch</span></label>
+            </div>
+          </div>
+          <figure class="figure-card" data-robot="g1">
+            <img src="static/images/fk-extrapolation.webp" srcset="static/images/fk-extrapolation-1200.webp 1200w, static/images/fk-extrapolation.webp 2400w" sizes="(max-width: 1318px) calc(100vw - 118px), 1200px" decoding="async" width="2400" height="710" loading="lazy" alt="The G1 humanoid at one configuration outside the training range, as predicted by MLP, GCN, Transformer, Body Transformer (BoT), Rodrigues and Screw (ours), next to the ground truth. The four generic networks scatter links across the scene, shaded dark blue for large error; Rodrigues stays mostly intact, with visible error on a leg and a hand; ours matches the ground truth. Color scale: fitting error (MSE), log scale from 3.0e-07 to 5.86e-01.">
+            <figcaption><strong>Kinematics Extrapolation.</strong> Generic networks failed to recover an unseen pose, while our Neural Screw Operator reproduces the ground truth.</figcaption>
+          </figure>
+          <figure class="figure-card" data-robot="fetch">
+            <img src="static/images/fk-extrapolation-fetch.webp" srcset="static/images/fk-extrapolation-fetch-1200.webp 1200w, static/images/fk-extrapolation-fetch.webp 2400w" sizes="(max-width: 1318px) calc(100vw - 118px), 1200px" decoding="async" width="2400" height="331" loading="lazy" alt="The Fetch mobile manipulator at one configuration outside the training range, as predicted by MLP, GCN, Transformer, Body Transformer (BoT), Rodrigues and Screw (ours), next to the ground truth. The four generic networks keep the robot in one piece, with error shading on the arm and gripper, darkest for GCN. The Rodrigues panel is almost empty: the robot is displaced out of the frame, and only a small gripper fragment remains. Ours matches the ground truth. Color scale: fitting error (MSE), log scale from 3.00e-07 to 1.13e+00.">
+            <figcaption><strong>Kinematics Extrapolation on Fetch.</strong> Fetch's mobile base translates, a motion the rotation-only Rodrigues operator cannot represent: it shifts every link by about 3.3 m, so the robot leaves the frame. Our Neural Screw Operator reproduces the ground truth.</figcaption>
+          </figure>
+          <figure class="figure-card" data-robot="franka">
+            <img src="static/images/fk-extrapolation-franka.webp" srcset="static/images/fk-extrapolation-franka-1200.webp 1200w, static/images/fk-extrapolation-franka.webp 2400w" sizes="(max-width: 1318px) calc(100vw - 118px), 1200px" decoding="async" width="2400" height="529" loading="lazy" alt="The Franka arm at one configuration outside the training range, as predicted by MLP, GCN, Transformer, Body Transformer (BoT), Rodrigues and Screw (ours), next to the ground truth. The four generic networks break the arm apart, with the upper links scattered and shaded dark blue for large error. Rodrigues keeps the arm in one piece, with blue shading on the upper arm and the hand hanging apart from the wrist. Ours matches the ground truth. Color scale: fitting error (MSE), log scale from 3.00e-07 to 3.41e-01.">
+            <figcaption><strong>Kinematics Extrapolation on Franka.</strong> Generic networks break the arm apart and the Rodrigues operator misplaces the hand, while our Neural Screw Operator reproduces the ground truth.</figcaption>
+          </figure>
+          <figure class="figure-card" data-robot="stretch">
+            <img src="static/images/fk-extrapolation-stretch.webp" srcset="static/images/fk-extrapolation-stretch-1200.webp 1200w, static/images/fk-extrapolation-stretch.webp 2400w" sizes="(max-width: 1318px) calc(100vw - 118px), 1200px" decoding="async" width="2400" height="568" loading="lazy" alt="The Stretch mobile manipulator at one configuration outside the training range, as predicted by MLP, GCN, Transformer, Body Transformer (BoT), Rodrigues and Screw (ours), next to the ground truth. The four generic networks misplace the wrist and gripper, shaded dark blue; for GCN, Transformer and BoT they float apart from the arm. Rodrigues and ours keep the robot in one piece, Rodrigues with blue shading on the gripper and ours with fainter shading. Color scale: fitting error (MSE), log scale from 3.00e-07 to 2.47e-01.">
+            <figcaption><strong>Kinematics Extrapolation on Stretch.</strong> Generic networks misplace the wrist and gripper. The Rodrigues operator and our Neural Screw Operator both stay close to the ground truth, ours with the lower error (7.0×10<sup>−6</sup> against 9.7×10<sup>−5</sup>).</figcaption>
+          </figure>
+        </div>
+        <h3 class="subsection-title">Denoising efficiency</h3>
+        <figure class="viewer-shell">
+          <div id="denoising"></div>
+          <figcaption><strong>Denoising with the Latent Body Schema.</strong> Our model denoises an action chunk in fewer steps than Diffusion Policy's U-Net and a Rodrigues Network of the same size that read the same patch tokens.</figcaption>
+        </figure>
+        <noscript><p class="noscript-message">The denoising viewer needs JavaScript.</p></noscript>
+        <h3 class="subsection-title">Body-queried vision</h3>
+        <figure class="viewer-shell">
+          <div id="sensitivity"></div>
+          <figcaption><strong>Body-Queried Visual Sensitivity.</strong> We visualize what the denoiser reads. In our model, compact, task- and joint-specific visual representations emerge without spatial supervision: manipulation-related parts focus only on the task-relevant object, while body-pose and locomotion joints watch more of the environment. In a U-Net that cross-attends to the same patch tokens, every command reads nearly the same map. Each map is normalized to its own maximum.</figcaption>
+        </figure>
+        <noscript><p class="noscript-message">The sensitivity viewer needs JavaScript.</p></noscript>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results" aria-labelledby="results-title">
+      <div class="container">
+        <div class="section-heading has-text-centered"><h2 id="results-title">Results</h2></div>
+        <h3 class="subsection-title">Simulation</h3>
+        <figure class="viewer-shell">
+          <div class="viewer-topbar rollout-topbar">
+            <div class="task-tabs" id="rollout-tasks" role="tablist" aria-label="Simulation task"></div>
+            <div class="rollout-levels" id="rollout-levels" role="group" aria-label="Evaluation level"></div>
+          </div>
+          <div id="rollout-panel" role="tabpanel">
+            <p class="rollout-caption" id="rollout-caption"></p>
+            <div class="rollout-grid" id="rollout-grid"></div>
+          </div>
+          <figcaption>Nine whole-body tasks from the <a href="https://psi-lab.ai/SIMPLE/" target="_blank" rel="noopener">SIMPLE G1 benchmark</a>. Every method runs the same 30 episodes per task.</figcaption>
+        </figure>
+        <noscript><p class="noscript-message">The rollout videos need JavaScript.</p></noscript>
+        <h3 class="subsection-title real-world-title">Real world</h3>
+        <figure class="viewer-shell real-world-shell">
+          <div class="rollout-grid real-world-grid" id="real-grid">
+            <figure class="rollout-tile is-ours">
+              <video muted loop playsinline preload="metadata" poster="static/videos/real/trash-bin-poster.webp" data-src="static/videos/real/trash-bin.mp4" aria-label="BSP on the real G1, trash-bin task: the robot picks up the item, opens the bin with a foot and throws the item in"></video>
+              <figcaption><span class="rollout-name">Pedal Trash Bin</span><span class="rollout-badge success">Success</span></figcaption>
+              <p class="rollout-count real-world-desc">Grasp · Open Bin · Throw</p>
+            </figure>
+            <figure class="rollout-tile is-ours">
+              <video muted loop playsinline preload="metadata" poster="static/videos/real/trolley-poster.webp" data-src="static/videos/real/trolley.mp4" aria-label="BSP on the real G1, trolley task: the robot grasps the handle and pushes the trolley forward"></video>
+              <figcaption><span class="rollout-name">Push Trolley</span><span class="rollout-badge success">Success</span></figcaption>
+              <p class="rollout-count real-world-desc">Loco. · Grasp · Push</p>
+            </figure>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer"><div class="container footer-inner"><p>Body Schema Policy</p><div><a href="#intro">Back to top ↑</a></div></div></footer>
+</body>
+</html>
