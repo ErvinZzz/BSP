@@ -52,7 +52,7 @@
   function renderGrid() {
     const task = data.tasks.find(item => item.id === state.task);
     const level = data.levels[state.level];
-    byId("rollout-caption").textContent = `${task.name} · ${task.category} · ${level.label}, ${level.name.toLowerCase()} · episode 1 of ${data.episodes_per_level}`;
+    byId("rollout-caption").textContent = `${task.name} · ${task.category} · ${level.label}, ${level.name.toLowerCase()}`;
     const grid = byId("rollout-grid");
     grid.replaceChildren();
     for (const method of data.methods) {
@@ -62,7 +62,7 @@
         const video = node("video");
         video.muted = true; video.loop = true; video.playsInline = true; video.preload = "auto";
         video.setAttribute("muted", ""); video.setAttribute("playsinline", "");
-        video.setAttribute("aria-label", `${method.label}, ${task.id} ${level.label} episode 1: ${outcome}`);
+        video.setAttribute("aria-label", `${method.label}, ${task.id} ${level.label}: ${outcome}`);
         video.dataset.src = data.path.replace("<task>", task.id).replace("<level>", state.level).replace("<method>", method.id);
         video.addEventListener("play", showState); video.addEventListener("pause", showState);
         tile.append(video);
